@@ -35,7 +35,7 @@ const safeEq = (a, b) => {
   const x = Buffer.from(sha(String(a))), y = Buffer.from(sha(String(b)));
   return crypto.timingSafeEqual(x, y);
 };
-const DEFAULT_SETTINGS = { title: 'Family Secret Santa', budget: '', date: '', noSpouse: true };
+const DEFAULT_SETTINGS = { title: 'Family Secret Santa', budget: '', date: '', noSpouse: true, privateWishes: false };
 
 async function load() {
   const [people, settings, assign, pins, drawn, wish] = await redis([
@@ -54,7 +54,7 @@ async function load() {
 
 function publicState(s) {
   const wishes = {};
-  for (const p of s.people) wishes[p.id] = parse(s.wish[p.id], []);
+  if (!s.settings.privateWishes) for (const p of s.people) wishes[p.id] = parse(s.wish[p.id], []);
   return {
     settings: s.settings,
     started: s.started,
@@ -166,6 +166,18 @@ module.exports = async (req, res) => {
       return send(200, { ok: true, created: created === 1 });
     }
 
+    if (action === 'mine') {
+      // Private-wishlist mode: your own list, plus your person's once you've drawn.
+      await checkPin(s, b.personId, b.pin);
+      const wishes = { [b.personId]: parse(s.wish[b.personId], []) };
+      if (s.started && s.drawn[b.personId]) {
+        const [raw] = await redis([['GET', K.assign]]);
+        const r = parse(raw, {})[b.personId];
+        if (r) wishes[r] = parse(s.wish[r], []);
+      }
+      return send(200, { wishes });
+    }
+
     if (action === 'reveal') {
       await checkPin(s, b.personId, b.pin);
       if (!s.started) fail(409, "The draw hasn't started yet.");
@@ -173,7 +185,7 @@ module.exports = async (req, res) => {
       const receiverId = parse(raw, {})[b.personId];
       if (!receiverId) fail(409, 'You were added after the draw started. Ask the organizer to reset the draw.');
       await redis([['HSETNX', K.drawn, b.personId, String(Date.now())]]);
-      return send(200, { receiverId });
+      return send(200, { receiverId, items: parse(s.wish[receiverId], []) });
     }
 
     if (action === 'saveWish') {
@@ -195,6 +207,7 @@ module.exports = async (req, res) => {
           budget: String(v.budget || '').trim().slice(0, 30),
           date: /^\d{4}-\d{2}-\d{2}$/.test(v.date || '') ? v.date : '',
           noSpouse: !!v.noSpouse,
+          privateWishes: !!v.privateWishes,
         };
         if (s.started && next.noSpouse !== s.settings.noSpouse) fail(409, 'Reset the draw before changing the spouse rule.');
         await redis([['SET', K.settings, JSON.stringify(next)]]);
