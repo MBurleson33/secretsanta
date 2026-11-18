@@ -149,7 +149,8 @@ module.exports = async (req, res) => {
     const code = String(req.headers['x-family-code'] || '').trim().toLowerCase();
     if (!safeEq(code, FAMILY)) fail(401, "That family code isn't right.");
 
-    let b = req.body || {};
+    let b = {};
+    try { b = req.body || {}; } catch { fail(400, 'Could not read the request.'); }
     if (typeof b === 'string') b = parse(b, {});
     const action = (req.query && req.query.action) || b.action || 'state';
     const s = await load();
@@ -226,8 +227,8 @@ module.exports = async (req, res) => {
 
     fail(400, 'Unknown action.');
   } catch (e) {
-    send(e.status || 500, { error: e.status ? e.message : 'Something went wrong on the server.' });
     if (!e.status) console.error(e);
+    try { send(e.status || 500, { error: e.status ? e.message : 'Server error: ' + String(e && e.message || e).slice(0, 200) }); } catch {}
   }
 };
 
