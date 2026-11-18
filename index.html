@@ -131,6 +131,9 @@ label{display:grid;gap:6px}
 .cols{display:grid;gap:18px;align-items:start}.col{display:grid;gap:18px;align-content:start}
 main.wide{max-width:1160px}
 @media(min-width:900px){.cols{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px}.cols .tag{min-height:260px}}
+.acts{display:flex;gap:6px;flex:none}
+.wl li.editing{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold)}
+.edhead{margin:0;font-weight:800;color:var(--gold)}
 /* footer scene */
 footer svg{display:block;width:100%;height:clamp(110px,17vw,210px)}
 footer p{margin:0;background:#eef5f7;color:#4d6670;text-align:center;font-size:13px;padding:2px 16px calc(14px + env(safe-area-inset-bottom))}
@@ -400,14 +403,16 @@ async function pick(id) {
 }
 
 const itemsHtml = (items, editable) => items && items.length
-  ? `<ul class="wl">${items.map(it => `<li><div>
+  ? `<ul class="wl">${items.map(it => `<li class="${editable && S.editing === it.id ? 'editing' : ''}"><div>
       <p class="wt">${it.url ? `<a href="${esc(it.url)}" target="_blank" rel="noopener noreferrer">${esc(it.title || host(it.url))}</a>` : esc(it.title)}</p>
       ${it.url ? `<p class="wh">${esc(host(it.url))}</p>` : ''}${it.note ? `<p class="wn">${esc(it.note)}</p>` : ''}</div>
-      ${editable ? `<button class="x" data-del="${esc(it.id)}" aria-label="Remove ${esc(it.title)}">×</button>` : ''}</li>`).join('')}</ul>`
+      ${editable ? `<div class="acts"><button class="x" data-edit="${esc(it.id)}" aria-label="Edit ${esc(it.title)}"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16v4zM14 6l4 4" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg></button><button class="x" data-del="${esc(it.id)}" aria-label="Remove ${esc(it.title)}">×</button></div>` : ''}</li>`).join('')}</ul>`
   : `<p class="muted">${editable ? 'Nothing yet. Add a few ideas so your Santa has something to go on.' : 'No ideas yet. Check back later.'}</p>`;
 
 function vMe() {
   const me = person(S.me.id), d = S.data, rec = S.receiver && person(S.receiver);
+  const ed = S.editing && (d.wishes[me.id] || []).find(i => i.id === S.editing);
+  if (!ed) S.editing = null;
   let hero;
   if (!d.started) hero = `<div class="tag wait"><h3>The hat isn't ready yet</h3><p>Once the organizer starts the draw, come back here to pull your name. Add to your wishlist in the meantime.</p></div>`;
   else if (rec) hero = `<div class="tag ${S.pop ? 'pop' : ''}" role="region" aria-label="Your person"><p>You're the Secret Santa for</p><p class="big">${esc(rec.name)}</p><p>Keep it quiet.</p><button class="btn" data-act="hide">Hide</button></div>`;
@@ -421,18 +426,21 @@ function vMe() {
     <section class="card"><h3>My wishlist</h3><p class="muted small" style="margin:6px 0 0">Everyone in the family can see this. Paste a link or just describe it.</p>
       ${itemsHtml(d.wishes[me.id], true)}
       <form id="wishF" class="stackf" style="margin-top:16px">
-        <input name="title" maxlength="120" placeholder="What would you like?" aria-label="Wish" required>
-        <input name="url" inputmode="url" autocapitalize="off" spellcheck="false" placeholder="Link (optional)" aria-label="Link">
-        <input name="note" maxlength="240" placeholder="Size, color, notes (optional)" aria-label="Notes">
-        <button class="btn primary">Add to my list</button>
+        ${ed ? '<p class="edhead">Editing this idea</p>' : ''}
+        <input name="title" maxlength="120" placeholder="What would you like?" aria-label="Wish" required value="${esc(ed ? ed.title : '')}">
+        <input name="url" inputmode="url" autocapitalize="off" spellcheck="false" placeholder="Link (optional)" aria-label="Link" value="${esc(ed ? ed.url : '')}">
+        <input name="note" maxlength="240" placeholder="Size, color, notes (optional)" aria-label="Notes" value="${esc(ed ? ed.note : '')}">
+        <div class="row">${ed ? '<button type="button" class="btn" data-act="cancelEdit">Cancel</button>' : ''}<button class="btn primary" style="flex:1">${ed ? 'Save changes' : 'Add to my list'}</button></div>
       </form></section></div></div>`;
   $('#wishF').onsubmit = async e => {
     e.preventDefault();
-    const f = e.target, item = { id: rid(), title: f.title.value.trim(), url: f.url.value.trim(), note: f.note.value.trim() };
+    const f = e.target, item = { id: S.editing || rid(), title: f.title.value.trim(), url: f.url.value.trim(), note: f.note.value.trim() };
     if (!item.title) return;
-    const btn = f.querySelector('button'); btn.disabled = true;
-    try { await saveWish([...(S.data.wishes[S.me.id] || []), item]); toast('Added to your list'); }
-    catch (err) { btn.disabled = false; oops(err); }
+    const btn = f.querySelector('.primary'); btn.disabled = true;
+    const cur = S.data.wishes[S.me.id] || [], editing = !!S.editing;
+    const next = editing ? cur.map(i => i.id === item.id ? item : i) : [...cur, item];
+    try { S.editing = null; await saveWish(next); toast(editing ? 'Saved' : 'Added to your list'); }
+    catch (err) { if (editing) S.editing = item.id; btn.disabled = false; oops(err); }
   };
 }
 
@@ -537,7 +545,13 @@ document.addEventListener('click', async e => {
   const t = e.target.closest('button'); if (!t || t.closest('#modal')) return;
   if (t.closest('#tabs')) { S.view = t.dataset.v; paint(); refresh().catch(oops); return; }
   if (t.dataset.pick) return pick(t.dataset.pick);
+  if (t.dataset.edit) {
+    S.editing = t.dataset.edit; paint();
+    const f = $('#wishF'); if (f) { f.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'center' }); f.title.focus(); }
+    return;
+  }
   if (t.dataset.del) {
+    if (S.editing === t.dataset.del) S.editing = null;
     try { await saveWish((S.data.wishes[S.me.id] || []).filter(i => i.id !== t.dataset.del)); toast('Removed'); } catch (err) { oops(err); }
     return;
   }
@@ -548,8 +562,9 @@ document.addEventListener('click', async e => {
     return;
   }
   switch (t.dataset.act) {
-    case 'switch': S.me = null; S.receiver = null; store.set('me', null); paint(); break;
+    case 'switch': S.editing = null; S.me = null; S.receiver = null; store.set('me', null); paint(); break;
     case 'hide': S.receiver = null; paint(); break;
+    case 'cancelEdit': S.editing = null; paint(); break;
     case 'draw':
       t.disabled = true;
       try { const r = await api('reveal', { personId: S.me.id, pin: S.me.pin }); S.receiver = r.receiverId; S.pop = true; await refresh(); }
