@@ -128,6 +128,9 @@ label{display:grid;gap:6px}
 .chev{flex:none;width:10px;height:10px;border-right:2.5px solid var(--muted);border-bottom:2.5px solid var(--muted);transform:translateY(-3px) rotate(45deg);transition:transform .2s;margin:0 4px}
 .acc details[open] .chev{transform:translateY(2px) rotate(-135deg)}
 .accb{padding:0 14px 14px}.accb .wl{margin-top:0}.accb>p{margin:0 4px 4px}
+.cols{display:grid;gap:18px;align-items:start}.col{display:grid;gap:18px;align-content:start}
+main.wide{max-width:1160px}
+@media(min-width:900px){.cols{grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:24px}.cols .tag{min-height:260px}}
 /* footer scene */
 footer svg{display:block;width:100%;height:clamp(110px,17vw,210px)}
 footer p{margin:0;background:#eef5f7;color:#4d6670;text-align:center;font-size:13px;padding:2px 16px calc(14px + env(safe-area-inset-bottom))}
@@ -344,6 +347,7 @@ function paint() {
   $('#tabs').hidden = !S.data;
   document.querySelectorAll('#tabs button').forEach(b => b.setAttribute('aria-current', String(b.dataset.v === S.view)));
   if (!S.code || !S.data) return vGate();
+  app.classList.toggle('wide', S.view === 'me' && !!S.me);
   if (S.view === 'lists') return vLists();
   if (S.view === 'admin') return vAdmin();
   return S.me ? vMe() : vWho();
@@ -410,8 +414,10 @@ function vMe() {
   else hero = `<button class="tag" data-act="draw"><h3>${me.drawn ? 'See who you drew' : 'Draw my name'}</h3><p>${me.drawn ? 'You already drew. Tap to see them again.' : "Tap to pull a name from the hat. Only you will see it, and you'll never get yourself."}</p></button>`;
   S.pop = false;
   app.innerHTML = `<div class="lhead"><h2 class="hello">Hi, ${esc(me.name.split(' ')[0])}</h2><button class="link" data-act="switch">Not ${esc(me.name)}?</button></div>
+    <div class="cols"><div class="col">
     <div class="tagwrap">${hero}</div>
     ${rec ? `<section class="card"><h3>${esc(rec.name)}'s wishlist</h3>${itemsHtml(d.wishes[rec.id], false)}</section>` : ''}
+    </div><div class="col">
     <section class="card"><h3>My wishlist</h3><p class="muted small" style="margin:6px 0 0">Everyone in the family can see this. Paste a link or just describe it.</p>
       ${itemsHtml(d.wishes[me.id], true)}
       <form id="wishF" class="stackf" style="margin-top:16px">
@@ -419,7 +425,7 @@ function vMe() {
         <input name="url" inputmode="url" autocapitalize="off" spellcheck="false" placeholder="Link (optional)" aria-label="Link">
         <input name="note" maxlength="240" placeholder="Size, color, notes (optional)" aria-label="Notes">
         <button class="btn primary">Add to my list</button>
-      </form></section>`;
+      </form></section></div></div>`;
   $('#wishF').onsubmit = async e => {
     e.preventDefault();
     const f = e.target, item = { id: rid(), title: f.title.value.trim(), url: f.url.value.trim(), note: f.note.value.trim() };
