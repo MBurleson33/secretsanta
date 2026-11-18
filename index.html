@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0f3d2e">
+<title>Family Secret Santa</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,800&display=swap" rel="stylesheet">
+<style>
+/* VOICE warm, family, a little festive — never cheesy
+   IDEA a gift tag pulled from a hat: your name is a tag you flip over
+   PICTURE the big cranberry gift tag on "My draw" is the hero
+   COLOUR pine band, white cards, cranberry tags, a thread of gold
+   TYPE Fraunces for names and titles, Nunito Sans for everything else */
+:root{color-scheme:light dark;
+  --bg:light-dark(#eef3ef,#0a1712);--card:light-dark(#fff,#11251d);--ink:light-dark(#14231d,#eaf2ed);
+  --muted:light-dark(#5b6b64,#9db0a6);--line:light-dark(#d8e1dc,#24402f);--soft:light-dark(#f5f8f6,#0e1f18);
+  --pine:#0f3d2e;--cran:light-dark(#b3122e,#d0304a);--gold:#e3b04b;--ok:light-dark(#1f7a4d,#5fd39a)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 "Nunito Sans",system-ui,sans-serif;overflow-x:clip}
+h1,h2,h3,.big{font-family:Fraunces,Georgia,serif;line-height:1.1;text-wrap:balance;margin:0}
+.wrap{max-width:760px;margin:0 auto;padding:0 max(4vw,16px)}
+.top{background:var(--pine) radial-gradient(circle at 20% 30%,#ffffff14 1.5px,transparent 2px) 0 0/38px 38px;color:#fff;padding-top:max(22px,env(safe-area-inset-top))}
+.brand{display:flex;gap:14px;align-items:center;padding-bottom:16px}
+.brand svg{flex:none;width:46px;height:46px}
+.top h1{font-size:clamp(26px,6vw,38px);font-weight:800}
+.top p{margin:4px 0 0;color:#cfe3d8;font-size:15px}
+nav{display:flex;gap:4px;overflow-x:auto}
+nav button{flex:none;font:inherit;font-weight:800;font-size:15px;color:#cfe3d8;background:none;border:0;padding:12px 16px;border-radius:12px 12px 0 0;cursor:pointer;min-height:44px}
+nav button[aria-current=true]{background:var(--bg);color:var(--ink)}
+main{padding-top:24px!important;padding-bottom:64px!important;display:grid;gap:18px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:clamp(18px,4vw,26px)}
+.card h2{font-size:24px;margin-bottom:6px}.card h3{font-size:20px}
+.muted{color:var(--muted)}.small{font-size:14px}
+.err{color:var(--cran);font-weight:700;min-height:1.2em;margin:8px 0 0;font-size:15px}
+input,select{font:inherit;font-size:16px;width:100%;padding:12px 14px;border:1.5px solid var(--line);border-radius:12px;background:var(--soft);color:var(--ink);min-height:48px}
+input:focus,select:focus,button:focus-visible{outline:3px solid var(--gold);outline-offset:1px;border-color:transparent}
+.btn{font:inherit;font-weight:800;border:0;border-radius:999px;padding:12px 22px;min-height:48px;cursor:pointer;background:var(--soft);color:var(--ink);border:1.5px solid var(--line)}
+.btn.primary{background:var(--cran);color:#fff;border-color:transparent}
+.btn.danger{color:var(--cran);border-color:var(--cran);background:none}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.link{font:inherit;font-weight:700;background:none;border:0;color:var(--cran);cursor:pointer;padding:8px 4px;min-height:44px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.stackf{display:grid;gap:10px}
+.who{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-top:14px}
+.who button{font:inherit;font-weight:800;font-size:17px;text-align:left;padding:14px 16px;min-height:56px;border-radius:14px;border:1.5px solid var(--line);background:var(--soft);color:var(--ink);cursor:pointer;display:flex;justify-content:space-between;gap:8px;align-items:center}
+.who button:hover{border-color:var(--cran)}
+.chk{color:var(--ok);font-size:14px;font-weight:800;white-space:nowrap}
+/* the gift tag */
+.tag{position:relative;display:block;width:100%;border:0;font:inherit;text-align:left;color:#fff;cursor:pointer;
+  background:linear-gradient(135deg,var(--cran),#7e0c22);padding:34px 28px 34px 96px;min-height:220px;
+  clip-path:polygon(64px 0,100% 0,100% 100%,64px 100%,0 50%);border-radius:0 22px 22px 0;
+  filter:drop-shadow(0 10px 18px #0003)}
+.tag::before{content:"";position:absolute;left:34px;top:50%;width:22px;height:22px;margin-top:-11px;border-radius:50%;background:var(--bg);box-shadow:inset 0 0 0 4px var(--gold)}
+.tag .big{font-size:clamp(34px,9vw,56px);font-weight:800;margin:6px 0 10px;color:#fff}
+.tag h3{font-size:clamp(26px,6vw,34px);color:#fff}
+.tag p{margin:8px 0 0;color:#ffe3e8}
+.tag.wait{background:linear-gradient(135deg,#3d5a4d,#22362d);cursor:default}
+.tag.pop{animation:flip .7s cubic-bezier(.2,.8,.3,1.2)}
+@keyframes flip{from{transform:perspective(900px) rotateY(80deg) scale(.9);opacity:0}to{transform:none;opacity:1}}
+@media (prefers-reduced-motion:reduce){.tag.pop{animation:none}}
+.tag .btn{background:#ffffff22;color:#fff;border-color:#ffffff55;margin-top:12px;min-height:44px;padding:8px 18px}
+.facts{display:flex;gap:8px;flex-wrap:wrap}
+.pill{background:var(--soft);border:1px solid var(--line);border-radius:999px;padding:6px 14px;font-weight:700;font-size:14px;white-space:nowrap}
+.bar{height:10px;border-radius:9px;background:var(--soft);border:1px solid var(--line);overflow:hidden;margin:10px 0 4px}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--gold),var(--cran))}
+.wl{list-style:none;margin:12px 0 0;padding:0;display:grid;gap:8px}
+.wl li{display:flex;gap:10px;justify-content:space-between;align-items:flex-start;background:var(--soft);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.wl p{margin:0}.wt{font-weight:800}.wt a{color:var(--cran);text-underline-offset:3px}.wh,.wn{font-size:14px;color:var(--muted)}
+.x{flex:none;font:inherit;font-size:22px;line-height:1;width:44px;height:44px;border-radius:50%;border:1.5px solid var(--line);background:var(--card);color:var(--muted);cursor:pointer}
+.x:disabled{opacity:.35;cursor:not-allowed}
+.lhead{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
+.mark{font-size:13px;font-weight:800;color:#fff;background:var(--cran);border-radius:999px;padding:3px 10px}
+.prow{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr) 44px;gap:8px;align-items:center}
+.prow .meta{grid-column:1/-1;margin-top:-4px;font-size:14px}
+.people{display:grid;gap:14px;margin:14px 0}
+.switch{display:flex;gap:12px;align-items:center;cursor:pointer;font-weight:700;padding:6px 0}
+.switch input{appearance:none;width:52px;height:30px;min-height:0;border-radius:99px;background:var(--line);position:relative;padding:0;border:0;flex:none;cursor:pointer}
+.switch input::after{content:"";position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:#fff;transition:left .2s}
+.switch input:checked{background:var(--ok)}.switch input:checked::after{left:25px}
+.status{list-style:none;padding:0;margin:12px 0 0;columns:2 180px;gap:16px}
+.status li{padding:4px 0;break-inside:avoid}
+.scrim{position:fixed;inset:0;background:#0009;display:grid;place-items:center;padding:16px;z-index:10}
+.scrim[hidden]{display:none}
+.dlg{background:var(--card);color:var(--ink);border-radius:20px;padding:24px;width:min(420px,100%);box-shadow:0 20px 50px #0006}
+.dlg h2{font-size:24px;margin-bottom:8px}.dlg p{margin:0 0 12px}
+.dlg .row{justify-content:flex-end;margin-top:14px}
+input.pin{font-size:30px;letter-spacing:.5em;text-align:center;font-weight:800}
+.toast{position:fixed;left:50%;bottom:max(20px,env(safe-area-inset-bottom));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:12px 20px;border-radius:999px;font-weight:800;z-index:20;white-space:nowrap}
+.toast[hidden]{display:none}
+@media(max-width:600px){.tag{padding:28px 20px 28px 78px;clip-path:polygon(50px 0,100% 0,100% 100%,50px 100%,0 50%)}.tag::before{left:24px}
+  .prow{grid-template-columns:minmax(0,1fr) 44px}.prow select{grid-column:1/2;grid-row:2}}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <div class="brand">
+      <svg viewBox="0 0 48 48" aria-hidden="true"><rect x="6" y="20" width="36" height="24" rx="3" fill="#b3122e"/><rect x="3" y="13" width="42" height="9" rx="2.5" fill="#d0304a"/><rect x="21" y="13" width="6" height="31" fill="#e3b04b"/><path d="M24 13c-4-9-14-8-11-2 2 3 7 3 11 2zm0 0c4-9 14-8 11-2-2 3-7 3-11 2z" fill="none" stroke="#e3b04b" stroke-width="3" stroke-linejoin="round"/></svg>
+      <div><h1 id="title">Family Secret Santa</h1><p id="sub">Draw a name, keep it secret, check their wishlist.</p></div>
+    </div>
+    <nav id="tabs" hidden>
+      <button data-v="me">My draw</button><button data-v="lists">Wishlists</button><button data-v="admin">Organizer</button>
+    </nav>
+  </div>
+</header>
+<main id="app" class="wrap"><p class="muted">Loading…</p></main>
+
+<div id="modal" class="scrim" hidden>
+  <form class="dlg" role="dialog" aria-modal="true" aria-labelledby="mT" id="mF">
+    <h2 id="mT"></h2><p id="mB" class="muted"></p>
+    <input id="mI" hidden>
+    <p id="mE" class="err" role="alert"></p>
+    <div class="row" id="mA"></div>
+  </form>
+</div>
+<div id="toast" class="toast" hidden role="status"></div>
+
+<script>
+{
+const $ = s => document.querySelector(s);
+const app = $('#app');
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const store = {
+  get(k){ try { return JSON.parse(localStorage.getItem('ss.'+k)); } catch { return null; } },
+  set(k,v){ try { v == null ? localStorage.removeItem('ss.'+k) : localStorage.setItem('ss.'+k, JSON.stringify(v)); } catch {} }
+};
+const S = { code: store.get('code') || '', me: store.get('me'), data: null, view: 'me', adminPin: null, receiver: null, pop: false, edit: null };
+const rid = () => Math.random().toString(36).slice(2, 10).padEnd(8, '0');
+const person = id => S.data && S.data.people.find(p => p.id === id);
+const host = u => { try { return new URL(u).hostname.replace(/^www\./, ''); } catch { return ''; } };
+const fmtDate = d => d ? new Date(d + 'T12:00').toLocaleDateString(undefined, { month: 'long', day: 'numeric' }) : '';
+
+async function api(action, body) {
+  const r = await fetch('/api/ss?action=' + action, {
+    method: body ? 'POST' : 'GET',
+    headers: { 'Content-Type': 'application/json', 'X-Family-Code': S.code },
+    body: body ? JSON.stringify(body) : undefined
+  });
+  const j = await r.json().catch(() => ({ error: 'The server sent an unexpected reply.' }));
+  if (!r.ok) { const e = new Error(j.error || 'Something went wrong.'); e.status = r.status; throw e; }
+  return j;
+}
+
+// ---------- custom dialog (no browser pop-ups) ----------
+function dialog({ title, body = '', input = null, buttons = [{ label: 'OK', value: true, primary: true }], submit = null }) {
+  return new Promise(resolve => {
+    const m = $('#modal'), f = $('#mF'), I = $('#mI'), E = $('#mE'), A = $('#mA');
+    $('#mT').textContent = title; $('#mB').textContent = body; $('#mB').hidden = !body; E.textContent = '';
+    I.hidden = !input; I.value = ''; I.className = ''; I.removeAttribute('maxlength');
+    if (input) Object.assign(I, { type: 'text', inputMode: 'text', placeholder: '', autocomplete: 'off' }, input);
+    A.innerHTML = '';
+    let done = false;
+    const close = value => { if (done) return; done = true; m.hidden = true; document.removeEventListener('keydown', onKey); resolve({ value, text: I.value }); };
+    const onKey = e => { if (e.key === 'Escape') close(false); };
+    for (const b of buttons) {
+      const el = document.createElement('button');
+      el.className = 'btn' + (b.primary ? ' primary' : '') + (b.danger ? ' danger' : '');
+      el.textContent = b.label; el.type = b.primary ? 'submit' : 'button';
+      if (!b.primary) el.onclick = () => close(b.value);
+      A.appendChild(el);
+    }
+    const primary = buttons.find(b => b.primary);
+    f.onsubmit = async e => {
+      e.preventDefault();
+      if (!primary) return;
+      if (submit) {
+        const btn = A.querySelector('.primary'); btn.disabled = true; E.textContent = '';
+        const err = await submit(I.value.trim());
+        btn.disabled = false;
+        if (err) { E.textContent = err; I.select(); return; }
+      }
+      close(primary.value);
+    };
+    m.onclick = e => { if (e.target === m) close(false); };
+    document.addEventListener('keydown', onKey);
+    m.hidden = false;
+    setTimeout(() => (input ? I : A.lastChild).focus(), 30);
+  });
+}
+const confirmBox = (title, body, label, danger) => dialog({ title, body, buttons: [{ label: 'Cancel', value: false }, { label, value: true, primary: true, danger }] }).then(r => r.value);
+const pinInput = { type: 'password', inputMode: 'numeric', maxLength: 4, placeholder: '••••', className: 'pin', autocomplete: 'off' };
+let tt;
+function toast(msg) { const t = $('#toast'); t.textContent = msg; t.hidden = false; clearTimeout(tt); tt = setTimeout(() => t.hidden = true, 2200); }
+
+// ---------- data ----------
+async function refresh() {
+  S.data = await api('state');
+  if (S.me && !person(S.me.id)) { S.me = null; store.set('me', null); }
+  paint();
+}
+function authFail(e) {
+  if (e.status === 401) { S.code = ''; store.set('code', null); S.data = null; paint(); return true; }
+  if (e.status === 403 && S.me) { S.me = null; S.receiver = null; store.set('me', null); toast('Please sign in again'); refresh(); return true; }
+  return false;
+}
+const oops = e => { if (!authFail(e)) dialog({ title: "That didn't work", body: e.message }); };
+
+// ---------- views ----------
+function paint() {
+  const st = S.data && S.data.settings;
+  $('#title').textContent = st ? st.title : 'Family Secret Santa';
+  document.title = st ? st.title : 'Family Secret Santa';
+  const bits = st ? [st.budget && st.budget + ' limit', st.date && 'Exchange ' + fmtDate(st.date)].filter(Boolean) : [];
+  $('#sub').textContent = bits.length ? bits.join(' · ') : 'Draw a name, keep it secret, check their wishlist.';
+  $('#tabs').hidden = !S.data;
+  document.querySelectorAll('#tabs button').forEach(b => b.setAttribute('aria-current', String(b.dataset.v === S.view)));
+  if (!S.code || !S.data) return vGate();
+  if (S.view === 'lists') return vLists();
+  if (S.view === 'admin') return vAdmin();
+  return S.me ? vMe() : vWho();
+}
+
+function vGate() {
+  app.innerHTML = `<section class="card"><h2>Enter your family code</h2>
+    <p class="muted">Ask whoever is running the exchange this year.</p>
+    <form id="gateF" class="stackf"><input id="gateI" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Family code" required>
+    <button class="btn primary">Come in</button><p class="err" id="gateE"></p></form></section>`;
+  $('#gateF').onsubmit = async e => {
+    e.preventDefault();
+    S.code = $('#gateI').value.trim();
+    try { await refresh(); store.set('code', S.code); }
+    catch (err) { S.code = ''; $('#gateE').textContent = err.message; }
+  };
+}
+
+function progress() {
+  const ps = S.data.people, n = ps.filter(p => p.drawn).length;
+  if (!S.data.started) return `<p class="muted small">${ps.length} ${ps.length === 1 ? 'person' : 'people'} on the list · the draw hasn't started</p>`;
+  return `<div class="bar" aria-hidden="true"><i style="width:${ps.length ? n / ps.length * 100 : 0}%"></i></div>
+    <p class="muted small">${n} of ${ps.length} have drawn a name</p>`;
+}
+
+function vWho() {
+  const ps = S.data.people;
+  app.innerHTML = `<section class="card"><h2>Who are you?</h2>
+    ${ps.length ? `<p class="muted">Tap your name. You'll set a 4-digit PIN the first time so nobody else can peek.</p>
+    <div class="who">${ps.map(p => `<button data-pick="${p.id}"><span>${esc(p.name)}</span>${p.drawn ? '<span class="chk">✓ drew</span>' : ''}</button>`).join('')}</div>`
+    : `<p class="muted">No one's on the list yet. The organizer adds names under Organizer.</p>`}
+    ${progress()}</section>`;
+}
+
+async function pick(id) {
+  const p = person(id); if (!p) return;
+  const first = !p.hasPin;
+  const r = await dialog({
+    title: first ? `Hi ${p.name}! Pick a PIN` : `Welcome back, ${p.name}`,
+    body: first ? "Choose 4 digits you'll remember. You'll need them to see who you drew." : 'Enter your 4-digit PIN. Forgot it? The organizer can reset it.',
+    input: pinInput,
+    buttons: [{ label: 'Cancel', value: false }, { label: first ? 'Set PIN' : 'Continue', value: true, primary: true }],
+    submit: async pin => {
+      if (!/^\d{4}$/.test(pin)) return 'Enter 4 digits.';
+      try { await api('login', { personId: id, pin }); S.me = { id, pin }; store.set('me', S.me); return null; }
+      catch (e) { return e.message; }
+    }
+  });
+  if (r.value) { S.receiver = null; S.view = 'me'; refresh().catch(oops); }
+}
+
+const itemsHtml = (items, editable) => items && items.length
+  ? `<ul class="wl">${items.map(it => `<li><div>
+      <p class="wt">${it.url ? `<a href="${esc(it.url)}" target="_blank" rel="noopener noreferrer">${esc(it.title || host(it.url))}</a>` : esc(it.title)}</p>
+      ${it.url ? `<p class="wh">${esc(host(it.url))}</p>` : ''}${it.note ? `<p class="wn">${esc(it.note)}</p>` : ''}</div>
+      ${editable ? `<button class="x" data-del="${esc(it.id)}" aria-label="Remove ${esc(it.title)}">×</button>` : ''}</li>`).join('')}</ul>`
+  : `<p class="muted">${editable ? 'Nothing yet. Add a few ideas so your Santa has something to go on.' : 'No ideas yet. Check back later.'}</p>`;
+
+function vMe() {
+  const me = person(S.me.id), d = S.data, rec = S.receiver && person(S.receiver);
+  let hero;
+  if (!d.started) hero = `<div class="tag wait"><h3>The hat isn't ready yet</h3><p>Once the organizer starts the draw, come back here to pull your name. Add to your wishlist in the meantime.</p></div>`;
+  else if (rec) hero = `<div class="tag ${S.pop ? 'pop' : ''}" role="region" aria-label="Your person"><p>You're the Secret Santa for</p><p class="big">${esc(rec.name)}</p><p>Keep it quiet.</p><button class="btn" data-act="hide">Hide</button></div>`;
+  else hero = `<button class="tag" data-act="draw"><h3>${me.drawn ? 'See who you drew' : 'Draw my name'}</h3><p>${me.drawn ? 'You already drew. Tap to see them again.' : "Tap to pull a name from the hat. Only you will see it, and you'll never get yourself."}</p></button>`;
+  S.pop = false;
+  app.innerHTML = `<div class="lhead"><h2 style="font-size:28px">Hi, ${esc(me.name)}</h2><button class="link" data-act="switch">Not ${esc(me.name)}?</button></div>
+    ${hero}
+    ${rec ? `<section class="card"><h3>${esc(rec.name)}'s wishlist</h3>${itemsHtml(d.wishes[rec.id], false)}</section>` : ''}
+    <section class="card"><h3>My wishlist</h3><p class="muted small">Everyone in the family can see this. Paste a link or just describe it.</p>
+      ${itemsHtml(d.wishes[me.id], true)}
+      <form id="wishF" class="stackf" style="margin-top:14px">
+        <input name="title" maxlength="120" placeholder="What would you like?" required>
+        <input name="url" inputmode="url" autocapitalize="off" spellcheck="false" placeholder="Link (optional)">
+        <input name="note" maxlength="240" placeholder="Size, color, notes (optional)">
+        <button class="btn primary">Add to my list</button>
+      </form></section>`;
+  $('#wishF').onsubmit = async e => {
+    e.preventDefault();
+    const f = e.target, item = { id: rid(), title: f.title.value.trim(), url: f.url.value.trim(), note: f.note.value.trim() };
+    if (!item.title) return;
+    const btn = f.querySelector('button'); btn.disabled = true;
+    try { await saveWish([...(S.data.wishes[S.me.id] || []), item]); toast('Added'); }
+    catch (err) { btn.disabled = false; oops(err); }
+  };
+}
+
+async function saveWish(items) {
+  const r = await api('saveWish', { personId: S.me.id, pin: S.me.pin, items });
+  S.data.wishes[S.me.id] = r.items; paint();
+}
+
+function vLists() {
+  const d = S.data, mine = S.me && S.me.id;
+  const ps = [...d.people].sort((a, b) => (b.id === S.receiver) - (a.id === S.receiver) || (a.id === mine) - (b.id === mine) || a.name.localeCompare(b.name));
+  app.innerHTML = `<section class="card"><h2>Everyone's wishlists</h2><p class="muted">Ideas, links and sizes from the whole family.</p>${progress()}</section>
+    ${ps.length ? ps.map(p => `<section class="card"><div class="lhead"><h3>${esc(p.name)}</h3>
+      ${p.id === S.receiver ? '<span class="mark">Your person</span>' : p.id === mine ? '<span class="pill">You</span>' : ''}</div>
+      ${itemsHtml(d.wishes[p.id], false)}</section>`).join('') : '<p class="muted">No one on the list yet.</p>'}`;
+}
+
+function vAdmin() {
+  const d = S.data;
+  if (!S.adminPin) {
+    app.innerHTML = `<section class="card"><h2>Organizer tools</h2>
+      <p class="muted">Add the family, pair up spouses, set the budget and start the draw. You won't see who drew whom, so the organizer can play too.</p>
+      <button class="btn primary" data-act="unlock">Unlock with organizer PIN</button></section>`;
+    return;
+  }
+  if (!S.edit) S.edit = d.people.map(p => ({ id: p.id, name: p.name, spouseId: p.spouseId }));
+  const locked = d.started, st = d.settings;
+  const opts = (p) => `<option value="">No spouse</option>` + S.edit.filter(o => o.id !== p.id && o.name.trim()).map(o => `<option value="${o.id}" ${p.spouseId === o.id ? 'selected' : ''}>${esc(o.name)}</option>`).join('');
+  app.innerHTML = `
+    <section class="card"><h2>The draw</h2>
+      ${locked ? `<p>Names are in the hat. Each person sees only their own.</p>${progress()}
+        <ul class="status">${d.people.map(p => `<li>${p.drawn ? '<span class="chk">✓</span>' : '<span class="muted">○</span>'} ${esc(p.name)}</li>`).join('')}</ul>
+        <div class="row" style="margin-top:14px"><button class="btn danger" data-act="reset">Reset the draw</button></div>`
+      : `<p class="muted">When everyone's on the list, start the draw. Every name is matched at once, so nobody gets themselves${st.noSpouse ? ' or their spouse' : ''} and the last person is never stuck.</p>
+        <div class="row" style="margin-top:12px"><button class="btn primary" data-act="start" ${d.people.length < 2 ? 'disabled' : ''}>Start the draw</button></div>`}
+    </section>
+    <section class="card"><h2>Family</h2>
+      ${locked ? '<p class="muted small">The draw has started, so you can only fix spelling. Reset the draw to add, remove or pair people.</p>' : '<p class="muted small">Pick a spouse for anyone who is married. Pairing one side pairs both.</p>'}
+      <div class="people">${S.edit.map((p, i) => {
+        const live = person(p.id);
+        return `<div class="prow" data-i="${i}">
+          <input data-name="${i}" value="${esc(p.name)}" maxlength="40" placeholder="Name" aria-label="Name">
+          <select data-sp="${i}" ${locked ? 'disabled' : ''} aria-label="Spouse of ${esc(p.name)}">${opts(p)}</select>
+          <button class="x" data-rm="${i}" ${locked ? 'disabled' : ''} aria-label="Remove ${esc(p.name)}">×</button>
+          ${live && live.hasPin ? `<div class="meta muted">Has a PIN · <button class="link" data-rpin="${p.id}">Reset PIN</button></div>` : ''}
+        </div>`; }).join('')}</div>
+      <div class="row"><button class="btn" data-act="add" ${locked ? 'disabled' : ''}>Add person</button><button class="btn primary" data-act="savePeople">Save family</button></div>
+    </section>
+    <section class="card"><h2>Settings</h2>
+      <form id="setF" class="stackf">
+        <label class="small muted">Title<input name="title" maxlength="60" value="${esc(st.title)}"></label>
+        <label class="small muted">Spending limit<input name="budget" maxlength="30" placeholder="$25" value="${esc(st.budget)}"></label>
+        <label class="small muted">Exchange date<input name="date" type="date" value="${esc(st.date)}"></label>
+        <label class="switch"><input type="checkbox" name="noSpouse" ${st.noSpouse ? 'checked' : ''} ${locked ? 'disabled' : ''}> No drawing your spouse</label>
+        <button class="btn primary">Save settings</button>
+      </form>
+    </section>
+    <div class="row"><button class="link" data-act="lock">Lock organizer tools</button></div>`;
+
+  app.querySelectorAll('[data-name]').forEach(el => el.oninput = () => { S.edit[+el.dataset.name].name = el.value; });
+  app.querySelectorAll('[data-sp]').forEach(el => el.onchange = () => {
+    const p = S.edit[+el.dataset.sp], nu = el.value || null;
+    for (const o of S.edit) if (o.spouseId === p.id || (nu && (o.spouseId === nu || o.id === nu))) o.spouseId = null;
+    p.spouseId = nu;
+    if (nu) S.edit.find(o => o.id === nu).spouseId = p.id;
+    vAdmin();
+  });
+  $('#setF').onsubmit = async e => {
+    e.preventDefault();
+    const f = e.target;
+    await admin('saveSettings', { settings: { title: f.title.value, budget: f.budget.value, date: f.date.value, noSpouse: f.noSpouse.checked } }, 'Settings saved');
+  };
+}
+
+async function admin(op, extra, okMsg) {
+  try {
+    S.data = await api('admin', { adminPin: S.adminPin, op, ...extra });
+    S.edit = null; paint(); if (okMsg) toast(okMsg); return true;
+  } catch (e) {
+    if (e.status === 403) S.adminPin = null;
+    oops(e); return false;
+  }
+}
+
+const peopleDirty = () => JSON.stringify(S.edit.map(p => [p.id, p.name.trim(), p.spouseId || null]).filter(p => p[1])) !== JSON.stringify(S.data.people.map(p => [p.id, p.name, p.spouseId || null]));
+
+// ---------- events ----------
+document.addEventListener('click', async e => {
+  const t = e.target.closest('button'); if (!t || t.closest('#modal')) return;
+  if (t.closest('#tabs')) { S.view = t.dataset.v; paint(); refresh().catch(oops); return; }
+  if (t.dataset.pick) return pick(t.dataset.pick);
+  if (t.dataset.del) {
+    try { await saveWish((S.data.wishes[S.me.id] || []).filter(i => i.id !== t.dataset.del)); toast('Removed'); } catch (err) { oops(err); }
+    return;
+  }
+  if (t.dataset.rm) { const i = +t.dataset.rm, gone = S.edit[i]; S.edit.splice(i, 1); S.edit.forEach(o => { if (o.spouseId === gone.id) o.spouseId = null; }); return vAdmin(); }
+  if (t.dataset.rpin) {
+    const p = person(t.dataset.rpin);
+    if (await confirmBox(`Reset ${p.name}'s PIN?`, 'They will pick a new one next time they tap their name. Their draw and wishlist stay put.', 'Reset PIN')) admin('resetPin', { personId: p.id }, 'PIN reset');
+    return;
+  }
+  switch (t.dataset.act) {
+    case 'switch': S.me = null; S.receiver = null; store.set('me', null); paint(); break;
+    case 'hide': S.receiver = null; paint(); break;
+    case 'draw':
+      t.disabled = true;
+      try { const r = await api('reveal', { personId: S.me.id, pin: S.me.pin }); S.receiver = r.receiverId; S.pop = true; await refresh(); }
+      catch (err) { t.disabled = false; oops(err); }
+      break;
+    case 'unlock': {
+      const r = await dialog({
+        title: 'Organizer PIN', body: 'The ADMIN_PIN you set when you deployed the site.',
+        input: { type: 'password', placeholder: 'Organizer PIN', autocomplete: 'off' },
+        buttons: [{ label: 'Cancel', value: false }, { label: 'Unlock', value: true, primary: true }],
+        submit: async pin => { try { await api('admin', { adminPin: pin, op: 'check' }); S.adminPin = pin; return null; } catch (err) { return err.message; } }
+      });
+      if (r.value) { S.edit = null; paint(); }
+      break;
+    }
+    case 'lock': S.adminPin = null; S.edit = null; paint(); break;
+    case 'add': S.edit.push({ id: rid(), name: '', spouseId: null }); vAdmin(); app.querySelector(`[data-name="${S.edit.length - 1}"]`).focus(); break;
+    case 'savePeople': admin('savePeople', { people: S.edit }, 'Family saved'); break;
+    case 'start':
+      if (peopleDirty()) { dialog({ title: 'Save the family first', body: 'You have unsaved changes to the family list. Save them, then start the draw.' }); break; }
+      if (await confirmBox('Start the draw?', `Everyone gets matched now${S.data.settings.noSpouse ? ', with no one drawing themselves or their spouse' : ''}. To add people later you'll need to reset and redraw.`, 'Start the draw'))
+        admin('start', {}, 'Names are in the hat');
+      break;
+    case 'reset':
+      if (await confirmBox('Reset the draw?', 'Every match is thrown out and everyone will need to draw again. Wishlists and PINs stay.', 'Reset the draw', true))
+        admin('resetDraw', {}, 'Draw reset');
+      break;
+  }
+});
+
+document.addEventListener('visibilitychange', () => { if (!document.hidden && S.data && $('#modal').hidden && S.view !== 'admin') refresh().catch(() => {}); });
+
+if (S.code) refresh().catch(e => { if (!authFail(e)) app.innerHTML = `<section class="card"><h2>Can't reach the site</h2><p class="muted">${esc(e.message)}</p><button class="btn" onclick="location.reload()">Try again</button></section>`; });
+else paint();
+}
+</script>
+</body>
+</html>
