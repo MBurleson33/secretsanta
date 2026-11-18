@@ -116,6 +116,18 @@ label{display:grid;gap:6px}
 .status li{padding:4px 0;break-inside:avoid}
 .chk{color:var(--ok);font-weight:800}
 
+.acc{display:grid;gap:10px;margin-top:22px}
+.acc details{background:var(--soft);border:1px solid var(--line);border-radius:16px;overflow:hidden;transition:border-color .2s}
+.acc details[open]{border-color:#f0c35a77;background:rgba(0,0,0,.32)}
+.acc summary{list-style:none;display:flex;align-items:center;gap:12px;padding:12px 16px;min-height:60px;cursor:pointer}
+.acc summary::-webkit-details-marker{display:none}
+.acc summary:focus-visible{outline:3px solid var(--gold);outline-offset:-3px;border-radius:16px}
+.dot{width:12px;height:12px;border-radius:50%;background:var(--c);box-shadow:0 0 10px var(--c);flex:none}
+.nm{font:800 18px/1.2 Fraunces,Georgia,serif;flex:1}
+.cnt{color:var(--muted);font-size:14px;white-space:nowrap}
+.chev{flex:none;width:10px;height:10px;border-right:2.5px solid var(--muted);border-bottom:2.5px solid var(--muted);transform:translateY(-3px) rotate(45deg);transition:transform .2s;margin:0 4px}
+.acc details[open] .chev{transform:translateY(2px) rotate(-135deg)}
+.accb{padding:0 14px 14px}.accb .wl{margin-top:0}.accb>p{margin:0 4px 4px}
 /* footer scene */
 footer svg{display:block;width:100%;height:clamp(110px,17vw,210px)}
 footer p{margin:0;background:#eef5f7;color:#4d6670;text-align:center;font-size:13px;padding:2px 16px calc(14px + env(safe-area-inset-bottom))}
@@ -131,6 +143,7 @@ input.pin{font-size:30px;letter-spacing:.5em;text-align:center;font-weight:800}
 .toast[hidden]{display:none}
 
 @media(max-width:600px){
+  .acc summary{flex-wrap:wrap;row-gap:2px}.acc .cnt{order:5;flex-basis:100%;padding-left:24px;margin-top:-2px}.acc .chev{order:4}
   .tag{padding:30px 20px 30px 80px;clip-path:polygon(50px 0,100% 0,100% 100%,50px 100%,0 50%)}.tag::before{left:24px}
   .who{grid-template-columns:repeat(2,minmax(0,1fr));gap:30px 12px}
   .ntag{font-size:16px;padding-left:40px}
@@ -425,10 +438,20 @@ async function saveWish(items) {
 function vLists() {
   const d = S.data, mine = S.me && S.me.id;
   const ps = [...d.people].sort((a, b) => (b.id === S.receiver) - (a.id === S.receiver) || (a.id === mine) - (b.id === mine) || a.name.localeCompare(b.name));
-  app.innerHTML = `<section class="card center"><h2>Everyone's wishlists</h2><p class="muted">Ideas, links and sizes from the whole family.</p>${progress()}</section>
-    ${ps.length ? ps.map(p => `<section class="card"><div class="lhead"><h3>${esc(p.name)}</h3>
-      ${p.id === S.receiver ? '<span class="mark">Your person</span>' : p.id === mine ? '<span class="pill">You</span>' : ''}</div>
-      ${itemsHtml(d.wishes[p.id], false)}</section>`).join('') : '<p class="muted center">No one on the list yet.</p>'}`;
+  if (S.openList === undefined) S.openList = S.receiver || null;
+  app.innerHTML = `<section class="card"><div class="center"><h2>Everyone's wishlists</h2><p class="muted">Tap a name to see their ideas.</p></div>
+    ${ps.length ? `<div class="acc">${ps.map((p, i) => {
+      const items = d.wishes[p.id] || [], n = items.length;
+      const badge = p.id === S.receiver ? '<span class="mark">Your person</span>' : p.id === mine ? '<span class="pill">You</span>' : '';
+      return `<details data-p="${p.id}" ${S.openList === p.id ? 'open' : ''}>
+        <summary><span class="dot" style="--c:${BULBS[i % 4]}"></span><span class="nm">${esc(p.name)}</span>${badge}
+        <span class="cnt">${n ? n + (n === 1 ? ' idea' : ' ideas') : 'No ideas yet'}</span><span class="chev" aria-hidden="true"></span></summary>
+        <div class="accb">${itemsHtml(items, false)}</div></details>`; }).join('')}</div>`
+    : '<p class="muted center">No one on the list yet.</p>'}</section>`;
+  app.querySelectorAll('details').forEach(el => el.addEventListener('toggle', () => {
+    if (el.open) { S.openList = el.dataset.p; app.querySelectorAll('details[open]').forEach(o => { if (o !== el) o.open = false; }); }
+    else if (S.openList === el.dataset.p) S.openList = null;
+  }));
 }
 
 function vAdmin() {
