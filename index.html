@@ -140,7 +140,8 @@ async function api(action, body) {
     headers: { 'Content-Type': 'application/json', 'X-Family-Code': S.code },
     body: body ? JSON.stringify(body) : undefined
   });
-  const j = await r.json().catch(() => ({ error: 'The server sent an unexpected reply.' }));
+  const raw = await r.text();
+  let j; try { j = JSON.parse(raw); } catch { j = { error: 'The server sent an unexpected reply (' + r.status + '): ' + raw.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 160) }; }
   if (!r.ok) { const e = new Error(j.error || 'Something went wrong.'); e.status = r.status; throw e; }
   return j;
 }
