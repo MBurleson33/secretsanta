@@ -2,112 +2,185 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#0f3d2e">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0a2219">
 <title>Family Secret Santa</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,800;1,9..144,600&family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,800&display=swap" rel="stylesheet">
 <style>
-/* VOICE warm, family, a little festive — never cheesy
-   IDEA a gift tag pulled from a hat: your name is a tag you flip over
-   PICTURE the big cranberry gift tag on "My draw" is the hero
-   COLOUR pine band, white cards, cranberry tags, a thread of gold
-   TYPE Fraunces for names and titles, Nunito Sans for everything else */
-:root{color-scheme:light dark;
-  --bg:light-dark(#eef3ef,#0a1712);--card:light-dark(#fff,#11251d);--ink:light-dark(#14231d,#eaf2ed);
-  --muted:light-dark(#5b6b64,#9db0a6);--line:light-dark(#d8e1dc,#24402f);--soft:light-dark(#f5f8f6,#0e1f18);
-  --pine:#0f3d2e;--cran:light-dark(#b3122e,#d0304a);--gold:#e3b04b;--ok:light-dark(#1f7a4d,#5fd39a)}
-:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+/* VOICE warm family Christmas — cosy, a little magical, never cheesy
+   IDEA a winter night outside the house: lights on the eaves, snow falling, names hung like gift tags
+   PICTURE twinkling light string on top, snowy hills and pines at the bottom, tags in between
+   COLOUR deep pine night, cranberry, gold, snow white
+   TYPE Fraunces for titles and names, Nunito Sans for the rest */
+:root{color-scheme:dark;
+  --night:#0b261c;--night2:#06120d;--card:rgba(255,255,255,.07);--line:rgba(255,255,255,.15);--soft:rgba(0,0,0,.25);
+  --ink:#fbf6ee;--muted:#bccbc2;--cran:#d42a45;--cran2:#8f1028;--gold:#f0c35a;--green:#2d8a5f;--green2:#145236;--ok:#86e3ae}
 *{box-sizing:border-box;min-width:0}
-body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 "Nunito Sans",system-ui,sans-serif;overflow-x:clip}
-h1,h2,h3,.big{font-family:Fraunces,Georgia,serif;line-height:1.1;text-wrap:balance;margin:0}
-.wrap{max-width:760px;margin:0 auto;padding:0 max(4vw,16px)}
-.top{background:var(--pine) radial-gradient(circle at 20% 30%,#ffffff14 1.5px,transparent 2px) 0 0/38px 38px;color:#fff;padding-top:max(22px,env(safe-area-inset-top))}
-.brand{display:flex;gap:14px;align-items:center;padding-bottom:16px}
-.brand svg{flex:none;width:46px;height:46px}
-.top h1{font-size:clamp(26px,6vw,38px);font-weight:800}
-.top p{margin:4px 0 0;color:#cfe3d8;font-size:15px}
-nav{display:flex;gap:4px;overflow-x:auto}
-nav button{flex:none;font:inherit;font-weight:800;font-size:15px;color:#cfe3d8;background:none;border:0;padding:12px 16px;border-radius:12px 12px 0 0;cursor:pointer;min-height:44px}
-nav button[aria-current=true]{background:var(--bg);color:var(--ink)}
-main{padding-top:24px!important;padding-bottom:64px!important;display:grid;gap:18px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:clamp(18px,4vw,26px)}
-.card h2{font-size:24px;margin-bottom:6px}.card h3{font-size:20px}
+html{background:var(--night2)}
+body{margin:0;min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;color:var(--ink);overflow-x:clip;
+  font:16px/1.55 "Nunito Sans",system-ui,sans-serif;
+  background:radial-gradient(1100px 520px at 50% -8%,#1f6045 0%,transparent 62%),radial-gradient(700px 420px at 90% 40%,#4a142433,transparent 70%),linear-gradient(180deg,var(--night) 0%,var(--night2) 100%);background-attachment:fixed}
+#snow{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:0}
+header,main,footer{position:relative;z-index:1}
+h1,h2,h3,.big{font-family:Fraunces,Georgia,serif;line-height:1.08;text-wrap:balance;margin:0}
+.wrap{width:100%;max-width:780px;margin:0 auto;padding:0 max(4vw,16px)}
+
+/* lights + header */
+.lights{display:block;width:100%;height:58px;margin-top:env(safe-area-inset-top)}
+.lights .b{animation:tw 2.6s ease-in-out infinite alternate}
+@keyframes tw{0%{opacity:1}60%{opacity:1}100%{opacity:.45}}
+.brand{text-align:center;padding:4px 0 18px}
+.brand svg{width:58px;height:58px;animation:bob 4s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-5px) rotate(-3deg)}}
+.brand h1{font-size:clamp(36px,7.5vw,62px);font-weight:800;color:#fff;margin-top:6px;text-shadow:0 2px 24px #f0c35a40}
+.brand h1 em{font-style:italic;font-weight:600;color:var(--gold)}
+.brand p{margin:8px 0 0;color:var(--muted);font-size:16px}
+.count{display:inline-block;margin-top:12px;background:var(--gold);color:#2a1a05;font-weight:800;font-size:14px;border-radius:999px;padding:5px 14px;white-space:nowrap}
+.count[hidden]{display:none}
+nav{display:flex;justify-content:center;gap:4px;background:rgba(0,0,0,.28);border:1px solid var(--line);border-radius:999px;padding:5px;width:max-content;max-width:100%;margin:0 auto;overflow-x:auto}
+nav[hidden]{display:none}
+nav button{flex:none;font:inherit;font-weight:800;font-size:15px;color:var(--muted);background:none;border:0;padding:10px 18px;border-radius:999px;cursor:pointer;min-height:44px}
+nav button[aria-current=true]{background:var(--cran);color:#fff;box-shadow:0 4px 14px #d42a4566}
+
+/* layout */
+main{flex:1;display:flex;flex-direction:column;justify-content:center;gap:18px;padding-top:28px!important;padding-bottom:28px!important}
+.card{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:clamp(20px,4vw,30px);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);box-shadow:0 24px 50px #0005}
+.card h2{font-size:clamp(26px,5vw,32px);margin-bottom:8px}.card h3{font-size:22px}
+.center{text-align:center}
 .muted{color:var(--muted)}.small{font-size:14px}
-.err{color:var(--cran);font-weight:700;min-height:1.2em;margin:8px 0 0;font-size:15px}
+.err{color:#ff8a9c;font-weight:700;min-height:1.2em;margin:8px 0 0;font-size:15px}
 input,select{font:inherit;font-size:16px;width:100%;padding:12px 14px;border:1.5px solid var(--line);border-radius:12px;background:var(--soft);color:var(--ink);min-height:48px}
+input::placeholder{color:#8fa398}
+select option{background:#10271d}
 input:focus,select:focus,button:focus-visible{outline:3px solid var(--gold);outline-offset:1px;border-color:transparent}
-.btn{font:inherit;font-weight:800;border:0;border-radius:999px;padding:12px 22px;min-height:48px;cursor:pointer;background:var(--soft);color:var(--ink);border:1.5px solid var(--line)}
-.btn.primary{background:var(--cran);color:#fff;border-color:transparent}
-.btn.danger{color:var(--cran);border-color:var(--cran);background:none}
+label{display:grid;gap:6px}
+.btn{font:inherit;font-weight:800;border-radius:999px;padding:12px 22px;min-height:48px;cursor:pointer;background:rgba(255,255,255,.08);color:var(--ink);border:1.5px solid var(--line)}
+.btn.primary{background:linear-gradient(180deg,#e0344f,var(--cran2));color:#fff;border-color:transparent;box-shadow:0 6px 18px #d42a4555}
+.btn.danger{color:#ff8a9c;border-color:#ff8a9c88;background:none}
 .btn:disabled{opacity:.5;cursor:not-allowed}
-.link{font:inherit;font-weight:700;background:none;border:0;color:var(--cran);cursor:pointer;padding:8px 4px;min-height:44px}
+.link{font:inherit;font-weight:700;background:none;border:0;color:var(--gold);cursor:pointer;padding:8px 4px;min-height:44px}
 .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-.stackf{display:grid;gap:10px}
-.who{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-top:14px}
-.who button{font:inherit;font-weight:800;font-size:17px;text-align:left;padding:14px 16px;min-height:56px;border-radius:14px;border:1.5px solid var(--line);background:var(--soft);color:var(--ink);cursor:pointer;display:flex;justify-content:space-between;gap:8px;align-items:center}
-.who button:hover{border-color:var(--cran)}
-.chk{color:var(--ok);font-size:14px;font-weight:800;white-space:nowrap}
-/* the gift tag */
+.stackf{display:grid;gap:12px}
+.gate{max-width:460px;width:100%;margin:0 auto}
+
+/* names hung like gift tags */
+.who{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:34px 18px;margin-top:34px}
+.ntag{--c1:var(--cran);--c2:var(--cran2);--tx:#fff;position:relative;isolation:isolate;border:0;background:none;color:var(--tx);cursor:pointer;
+  font:800 18px/1.2 Fraunces,Georgia,serif;text-align:left;padding:18px 16px 18px 44px;min-height:70px;display:flex;flex-direction:column;justify-content:center;gap:4px;
+  transform-origin:14px 50%;transition:transform .3s cubic-bezier(.3,1.6,.5,1);filter:drop-shadow(0 8px 12px #0006)}
+.ntag::before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(135deg,var(--c1),var(--c2));clip-path:polygon(26px 0,100% 0,100% 100%,26px 100%,0 50%);border-radius:0 12px 12px 0}
+.ntag::after{content:"";position:absolute;left:16px;top:50%;width:11px;height:11px;margin-top:-5.5px;border-radius:50%;background:var(--night);box-shadow:0 0 0 2.5px var(--gold)}
+.ntag .str{position:absolute;left:21px;bottom:50%;height:calc(50% + 24px);width:2px;background:linear-gradient(var(--gold),#c9973a);transform:rotate(-14deg);transform-origin:bottom}
+.ntag:nth-child(3n+2){--c1:var(--green);--c2:var(--green2)}
+.ntag:nth-child(3n){--c1:#f3cd6c;--c2:#c78f24;--tx:#2a1a05}
+.ntag:hover,.ntag:focus-visible{transform:rotate(-3deg) translateY(-2px)}
+.ntag .dr{font:800 12px/1 "Nunito Sans",sans-serif;opacity:.9;letter-spacing:.02em}
+.ntag:focus-visible{outline:none}.ntag:focus-visible::before{outline:3px solid #fff}
+
+/* hero gift tag */
 .tag{position:relative;display:block;width:100%;border:0;font:inherit;text-align:left;color:#fff;cursor:pointer;
-  background:linear-gradient(135deg,var(--cran),#7e0c22);padding:34px 28px 34px 96px;min-height:220px;
-  clip-path:polygon(64px 0,100% 0,100% 100%,64px 100%,0 50%);border-radius:0 22px 22px 0;
-  filter:drop-shadow(0 10px 18px #0003)}
-.tag::before{content:"";position:absolute;left:34px;top:50%;width:22px;height:22px;margin-top:-11px;border-radius:50%;background:var(--bg);box-shadow:inset 0 0 0 4px var(--gold)}
-.tag .big{font-size:clamp(34px,9vw,56px);font-weight:800;margin:6px 0 10px;color:#fff}
-.tag h3{font-size:clamp(26px,6vw,34px);color:#fff}
-.tag p{margin:8px 0 0;color:#ffe3e8}
-.tag.wait{background:linear-gradient(135deg,#3d5a4d,#22362d);cursor:default}
-.tag.pop{animation:flip .7s cubic-bezier(.2,.8,.3,1.2)}
+  background:linear-gradient(135deg,#e0344f,var(--cran2));padding:36px 28px 36px 100px;min-height:230px;
+  clip-path:polygon(66px 0,100% 0,100% 100%,66px 100%,0 50%);border-radius:0 24px 24px 0;overflow:hidden}
+.tagwrap{filter:drop-shadow(0 16px 26px #0007)}
+.tag::before{content:"";position:absolute;left:34px;top:50%;width:24px;height:24px;margin-top:-12px;border-radius:50%;background:var(--night);box-shadow:inset 0 0 0 4px var(--gold)}
+.tag::after{content:"";position:absolute;right:-40px;top:-40px;pointer-events:none;width:150px;height:150px;border-radius:50%;background:radial-gradient(circle,#ffffff22,transparent 70%)}
+.tag .big{font-size:clamp(38px,9vw,60px);font-weight:800;margin:6px 0 10px;color:#fff}
+.tag h3{font-size:clamp(28px,6vw,38px);color:#fff}
+.tag p{margin:8px 0 0;color:#ffe3e8;max-width:46ch}
+.tag.wait{background:linear-gradient(135deg,#2f6b51,#143a2a);cursor:default}
+.tag.pop{animation:flip .8s cubic-bezier(.2,.8,.3,1.2)}
 @keyframes flip{from{transform:perspective(900px) rotateY(80deg) scale(.9);opacity:0}to{transform:none;opacity:1}}
-@media (prefers-reduced-motion:reduce){.tag.pop{animation:none}}
-.tag .btn{background:#ffffff22;color:#fff;border-color:#ffffff55;margin-top:12px;min-height:44px;padding:8px 18px}
-.facts{display:flex;gap:8px;flex-wrap:wrap}
-.pill{background:var(--soft);border:1px solid var(--line);border-radius:999px;padding:6px 14px;font-weight:700;font-size:14px;white-space:nowrap}
-.bar{height:10px;border-radius:9px;background:var(--soft);border:1px solid var(--line);overflow:hidden;margin:10px 0 4px}
-.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--gold),var(--cran))}
-.wl{list-style:none;margin:12px 0 0;padding:0;display:grid;gap:8px}
+.tag .btn{background:#ffffff22;color:#fff;border-color:#ffffff55;margin-top:12px;min-height:44px;padding:8px 18px;box-shadow:none}
+
+.pill{background:rgba(255,255,255,.08);border:1px solid var(--line);border-radius:999px;padding:4px 12px;font-weight:700;font-size:13px;white-space:nowrap}
+.bar{height:12px;border-radius:9px;background:var(--soft);border:1px solid var(--line);overflow:hidden;margin:14px 0 6px}
+.bar i{display:block;height:100%;background:repeating-linear-gradient(-45deg,#fff 0 8px,var(--cran) 8px 16px)}
+.wl{list-style:none;margin:14px 0 0;padding:0;display:grid;gap:10px}
 .wl li{display:flex;gap:10px;justify-content:space-between;align-items:flex-start;background:var(--soft);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
-.wl p{margin:0}.wt{font-weight:800}.wt a{color:var(--cran);text-underline-offset:3px}.wh,.wn{font-size:14px;color:var(--muted)}
-.x{flex:none;font:inherit;font-size:22px;line-height:1;width:44px;height:44px;border-radius:50%;border:1.5px solid var(--line);background:var(--card);color:var(--muted);cursor:pointer}
+.wl p{margin:0}.wt{font-weight:800}.wt a{color:var(--gold);text-underline-offset:3px}.wh,.wn{font-size:14px;color:var(--muted)}
+.x{flex:none;font:inherit;font-size:22px;line-height:1;width:44px;height:44px;border-radius:50%;border:1.5px solid var(--line);background:rgba(255,255,255,.06);color:var(--muted);cursor:pointer}
 .x:disabled{opacity:.35;cursor:not-allowed}
 .lhead{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
-.mark{font-size:13px;font-weight:800;color:#fff;background:var(--cran);border-radius:999px;padding:3px 10px}
+.mark{font-size:13px;font-weight:800;color:#fff;background:var(--cran);border-radius:999px;padding:3px 10px;white-space:nowrap}
+.hello{font-size:clamp(30px,6vw,40px)}
 .prow{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr) 44px;gap:8px;align-items:center}
 .prow .meta{grid-column:1/-1;margin-top:-4px;font-size:14px}
-.people{display:grid;gap:14px;margin:14px 0}
-.switch{display:flex;gap:12px;align-items:center;cursor:pointer;font-weight:700;padding:6px 0}
-.switch input{appearance:none;width:52px;height:30px;min-height:0;border-radius:99px;background:var(--line);position:relative;padding:0;border:0;flex:none;cursor:pointer}
+.people{display:grid;gap:14px;margin:16px 0}
+.switch{display:flex;grid-auto-flow:column;gap:12px;align-items:center;cursor:pointer;font-weight:700;padding:6px 0;color:var(--ink)}
+.switch input{appearance:none;-webkit-appearance:none;width:52px;height:30px;min-height:0;border-radius:99px;background:rgba(255,255,255,.18);position:relative;padding:0;border:0;flex:none;cursor:pointer}
 .switch input::after{content:"";position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:#fff;transition:left .2s}
-.switch input:checked{background:var(--ok)}.switch input:checked::after{left:25px}
-.status{list-style:none;padding:0;margin:12px 0 0;columns:2 180px;gap:16px}
+.switch input:checked{background:var(--green)}.switch input:checked::after{left:25px}
+.status{list-style:none;padding:0;margin:14px 0 0;columns:2 180px;gap:16px}
 .status li{padding:4px 0;break-inside:avoid}
-.scrim{position:fixed;inset:0;background:#0009;display:grid;place-items:center;padding:16px;z-index:10}
+.chk{color:var(--ok);font-weight:800}
+
+/* footer scene */
+footer svg{display:block;width:100%;height:clamp(110px,17vw,210px)}
+footer p{margin:0;background:#eef5f7;color:#4d6670;text-align:center;font-size:13px;padding:2px 16px calc(14px + env(safe-area-inset-bottom))}
+
+/* dialog + toast */
+.scrim{position:fixed;inset:0;background:#000a;display:grid;place-items:center;padding:16px;z-index:10}
 .scrim[hidden]{display:none}
-.dlg{background:var(--card);color:var(--ink);border-radius:20px;padding:24px;width:min(420px,100%);box-shadow:0 20px 50px #0006}
-.dlg h2{font-size:24px;margin-bottom:8px}.dlg p{margin:0 0 12px}
+.dlg{background:#10291e;border:1px solid var(--line);color:var(--ink);border-radius:22px;padding:26px;width:min(420px,100%);box-shadow:0 24px 60px #000a}
+.dlg h2{font-size:26px;margin-bottom:8px}.dlg p{margin:0 0 12px}
 .dlg .row{justify-content:flex-end;margin-top:14px}
 input.pin{font-size:30px;letter-spacing:.5em;text-align:center;font-weight:800}
-.toast{position:fixed;left:50%;bottom:max(20px,env(safe-area-inset-bottom));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:12px 20px;border-radius:999px;font-weight:800;z-index:20;white-space:nowrap}
+.toast{position:fixed;left:50%;bottom:max(24px,env(safe-area-inset-bottom));transform:translateX(-50%);background:var(--gold);color:#2a1a05;padding:12px 22px;border-radius:999px;font-weight:800;z-index:20;white-space:nowrap;box-shadow:0 10px 24px #0006}
 .toast[hidden]{display:none}
-@media(max-width:600px){.tag{padding:28px 20px 28px 78px;clip-path:polygon(50px 0,100% 0,100% 100%,50px 100%,0 50%)}.tag::before{left:24px}
-  .prow{grid-template-columns:minmax(0,1fr) 44px}.prow select{grid-column:1/2;grid-row:2}}
+
+@media(max-width:600px){
+  .tag{padding:30px 20px 30px 80px;clip-path:polygon(50px 0,100% 0,100% 100%,50px 100%,0 50%)}.tag::before{left:24px}
+  .who{grid-template-columns:repeat(2,minmax(0,1fr));gap:30px 12px}
+  .ntag{font-size:16px;padding-left:40px}
+  .prow{grid-template-columns:minmax(0,1fr) 44px}.prow select{grid-column:1/2;grid-row:2}
+  nav button{padding:10px 14px}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
-<header class="top">
+<canvas id="snow" aria-hidden="true"></canvas>
+<header>
+  <svg class="lights" id="lights" aria-hidden="true"></svg>
   <div class="wrap">
     <div class="brand">
-      <svg viewBox="0 0 48 48" aria-hidden="true"><rect x="6" y="20" width="36" height="24" rx="3" fill="#b3122e"/><rect x="3" y="13" width="42" height="9" rx="2.5" fill="#d0304a"/><rect x="21" y="13" width="6" height="31" fill="#e3b04b"/><path d="M24 13c-4-9-14-8-11-2 2 3 7 3 11 2zm0 0c4-9 14-8 11-2-2 3-7 3-11 2z" fill="none" stroke="#e3b04b" stroke-width="3" stroke-linejoin="round"/></svg>
-      <div><h1 id="title">Family Secret Santa</h1><p id="sub">Draw a name, keep it secret, check their wishlist.</p></div>
+      <svg viewBox="0 0 48 48" aria-hidden="true"><rect x="6" y="20" width="36" height="24" rx="3" fill="#b3122e"/><rect x="3" y="13" width="42" height="9" rx="2.5" fill="#d42a45"/><rect x="21" y="13" width="6" height="31" fill="#f0c35a"/><path d="M24 13c-4-9-14-8-11-2 2 3 7 3 11 2zm0 0c4-9 14-8 11-2-2 3-7 3-11 2z" fill="none" stroke="#f0c35a" stroke-width="3" stroke-linejoin="round"/></svg>
+      <h1 id="title">Family <em>Secret Santa</em></h1>
+      <p id="sub">Draw a name, keep it secret, check their wishlist.</p>
+      <span class="count" id="count" hidden></span>
     </div>
     <nav id="tabs" hidden>
       <button data-v="me">My draw</button><button data-v="lists">Wishlists</button><button data-v="admin">Organizer</button>
     </nav>
   </div>
 </header>
-<main id="app" class="wrap"><p class="muted">Loading…</p></main>
+
+<main id="app" class="wrap"><p class="muted center">Loading…</p></main>
+
+<footer aria-hidden="true">
+  <svg viewBox="0 0 1440 210" preserveAspectRatio="xMidYMax slice">
+    <defs>
+      <symbol id="tree" viewBox="0 0 60 100" overflow="visible">
+        <rect x="26" y="84" width="8" height="16" fill="#3b2a1d"/>
+        <path d="M30 0 L52 34 H42 L58 60 H46 L60 88 H0 L14 60 H2 L18 34 H8 Z" fill="#0f4430"/>
+        <path d="M30 0 L52 34 H42 L46 40 L30 26 L14 40 L18 34 H8 Z M14 60 H2 L0 64 L30 52 L60 64 L58 60 H46 L42 58 L30 50 L18 58 Z" fill="#eaf3f5" opacity=".85"/>
+      </symbol>
+    </defs>
+    <path d="M0 120 C180 70 330 90 480 110 S800 60 980 92 S1300 70 1440 96 V210 H0Z" fill="#cfe1e7" opacity=".55"/>
+    <use href="#tree" x="90" y="40" width="44" height="74"/><use href="#tree" x="150" y="58" width="34" height="58"/>
+    <use href="#tree" x="610" y="36" width="40" height="70"/><use href="#tree" x="1180" y="34" width="46" height="76"/><use href="#tree" x="1240" y="56" width="32" height="54"/>
+    <path d="M0 150 C220 112 420 140 640 136 S1040 104 1240 128 S1400 140 1440 132 V210 H0Z" fill="#eef5f7"/>
+    <use href="#tree" x="20" y="70" width="62" height="104"/><use href="#tree" x="300" y="88" width="48" height="80"/>
+    <use href="#tree" x="880" y="76" width="56" height="94"/><use href="#tree" x="940" y="98" width="40" height="66"/>
+    <use href="#tree" x="1340" y="66" width="66" height="110"/>
+    <g transform="translate(470 120)"><rect x="0" y="10" width="34" height="26" rx="3" fill="#d42a45"/><rect x="-2" y="4" width="38" height="8" rx="2" fill="#e0344f"/><rect x="14" y="4" width="6" height="32" fill="#f0c35a"/>
+      <rect x="40" y="18" width="26" height="18" rx="3" fill="#2d8a5f"/><rect x="38" y="13" width="30" height="7" rx="2" fill="#38a06f"/><rect x="50" y="13" width="5" height="23" fill="#fff"/></g>
+    <g transform="translate(1090 116)"><rect x="0" y="12" width="30" height="24" rx="3" fill="#f0c35a"/><rect x="-2" y="6" width="34" height="8" rx="2" fill="#f6d27e"/><rect x="12" y="6" width="6" height="30" fill="#d42a45"/></g>
+  </svg>
+  <p>Merry Christmas from our family to yours</p>
+</footer>
 
 <div id="modal" class="scrim" hidden>
   <form class="dlg" role="dialog" aria-modal="true" aria-labelledby="mT" id="mF">
@@ -123,6 +196,44 @@ input.pin{font-size:30px;letter-spacing:.5em;text-align:center;font-weight:800}
 {
 const $ = s => document.querySelector(s);
 const app = $('#app');
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+// ---------- festive bits: lights + snow ----------
+const BULBS = ['#ff4d5e', '#f7c948', '#3ddc84', '#4db8ff', '#ff8a3d', '#fff4d6'];
+function drawLights() {
+  const svg = $('#lights'), w = svg.clientWidth || innerWidth, gap = w < 600 ? 46 : 60, n = Math.ceil(w / gap) + 1;
+  let d = 'M0 8', b = '';
+  for (let i = 0; i < n; i++) {
+    const x = i * gap, m = x + gap / 2, c = BULBS[i % BULBS.length];
+    d += ` Q${m} 34 ${x + gap} 8`;
+    b += `<g class="b" style="animation-delay:${(i * 0.37) % 2.6}s;filter:drop-shadow(0 0 6px ${c})"><rect x="${m - 3.5}" y="19" width="7" height="7" rx="1.5" fill="#24352c"/><ellipse cx="${m}" cy="34" rx="6.5" ry="9.5" fill="${c}"/><ellipse cx="${m - 2}" cy="31" rx="1.8" ry="3" fill="#fff" opacity=".6"/></g>`;
+  }
+  svg.setAttribute('viewBox', `0 0 ${w} 58`);
+  svg.innerHTML = `<path d="${d}" fill="none" stroke="#06130d" stroke-width="2.5"/>${b}`;
+}
+const cv = $('#snow'), cx = cv.getContext('2d');
+let flakes = [], raf = 0;
+function sizeSnow() {
+  const r = devicePixelRatio || 1;
+  cv.width = innerWidth * r; cv.height = innerHeight * r;
+  const n = Math.round(Math.min(170, innerWidth / 8));
+  flakes = Array.from({ length: n }, () => ({ x: Math.random() * cv.width, y: Math.random() * cv.height, r: (Math.random() * 2.2 + 0.7) * r, s: (Math.random() * 0.6 + 0.25) * r, d: Math.random() * 6.3 }));
+}
+function snow() {
+  cx.clearRect(0, 0, cv.width, cv.height);
+  cx.fillStyle = '#fff';
+  for (const f of flakes) {
+    if (!reduce) { f.y += f.s; f.d += 0.012; f.x += Math.sin(f.d) * 0.35; if (f.y > cv.height + 5) { f.y = -5; f.x = Math.random() * cv.width; } }
+    cx.globalAlpha = 0.35 + f.r / 8; cx.beginPath(); cx.arc(f.x, f.y, f.r, 0, 6.3); cx.fill();
+  }
+  if (!reduce) raf = requestAnimationFrame(snow);
+}
+function startFx() { cancelAnimationFrame(raf); sizeSnow(); drawLights(); snow(); }
+let rt; addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(startFx, 150); });
+document.addEventListener('visibilitychange', () => { if (document.hidden) cancelAnimationFrame(raf); else if (!reduce) { cancelAnimationFrame(raf); snow(); } });
+startFx();
+
+// ---------- helpers ----------
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const store = {
   get(k){ try { return JSON.parse(localStorage.getItem('ss.'+k)); } catch { return null; } },
@@ -201,12 +312,22 @@ function authFail(e) {
 const oops = e => { if (!authFail(e)) dialog({ title: "That didn't work", body: e.message }); };
 
 // ---------- views ----------
+function setTitle(t) {
+  const h = $('#title'), m = String(t).match(/^(.*?)(secret santa)(.*)$/i);
+  h.innerHTML = m ? `${esc(m[1])}<em>${esc(m[2])}</em>${esc(m[3])}` : esc(t);
+}
 function paint() {
   const st = S.data && S.data.settings;
-  $('#title').textContent = st ? st.title : 'Family Secret Santa';
+  setTitle(st ? st.title : 'Family Secret Santa');
   document.title = st ? st.title : 'Family Secret Santa';
   const bits = st ? [st.budget && st.budget + ' limit', st.date && 'Exchange ' + fmtDate(st.date)].filter(Boolean) : [];
   $('#sub').textContent = bits.length ? bits.join(' · ') : 'Draw a name, keep it secret, check their wishlist.';
+  const cEl = $('#count'); cEl.hidden = true;
+  if (st && st.date) {
+    const t = new Date(); t.setHours(0, 0, 0, 0);
+    const days = Math.round((new Date(st.date + 'T00:00') - t) / 864e5);
+    if (days >= 0) { cEl.textContent = days === 0 ? "It's exchange day!" : days === 1 ? '1 day to go' : days + ' days to go'; cEl.hidden = false; }
+  }
   $('#tabs').hidden = !S.data;
   document.querySelectorAll('#tabs button').forEach(b => b.setAttribute('aria-current', String(b.dataset.v === S.view)));
   if (!S.code || !S.data) return vGate();
@@ -216,9 +337,9 @@ function paint() {
 }
 
 function vGate() {
-  app.innerHTML = `<section class="card"><h2>Enter your family code</h2>
-    <p class="muted">Ask whoever is running the exchange this year.</p>
-    <form id="gateF" class="stackf"><input id="gateI" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Family code" required>
+  app.innerHTML = `<section class="card gate center"><h2>Welcome in from the cold</h2>
+    <p class="muted">Enter the family code to join this year's exchange. Ask whoever is running it if you don't have it.</p>
+    <form id="gateF" class="stackf" style="margin-top:18px"><input id="gateI" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Family code" aria-label="Family code" required style="text-align:center">
     <button class="btn primary">Come in</button><p class="err" id="gateE"></p></form></section>`;
   $('#gateF').onsubmit = async e => {
     e.preventDefault();
@@ -230,18 +351,18 @@ function vGate() {
 
 function progress() {
   const ps = S.data.people, n = ps.filter(p => p.drawn).length;
-  if (!S.data.started) return `<p class="muted small">${ps.length} ${ps.length === 1 ? 'person' : 'people'} on the list · the draw hasn't started</p>`;
+  if (!S.data.started) return `<p class="muted small">${ps.length} ${ps.length === 1 ? 'person' : 'people'} on the list · the draw hasn't started yet</p>`;
   return `<div class="bar" aria-hidden="true"><i style="width:${ps.length ? n / ps.length * 100 : 0}%"></i></div>
     <p class="muted small">${n} of ${ps.length} have drawn a name</p>`;
 }
 
 function vWho() {
   const ps = S.data.people;
-  app.innerHTML = `<section class="card"><h2>Who are you?</h2>
-    ${ps.length ? `<p class="muted">Tap your name. You'll set a 4-digit PIN the first time so nobody else can peek.</p>
-    <div class="who">${ps.map(p => `<button data-pick="${p.id}"><span>${esc(p.name)}</span>${p.drawn ? '<span class="chk">✓ drew</span>' : ''}</button>`).join('')}</div>`
-    : `<p class="muted">No one's on the list yet. The organizer adds names under Organizer.</p>`}
-    ${progress()}</section>`;
+  app.innerHTML = `<section class="card"><h2 class="center">Who are you?</h2>
+    ${ps.length ? `<p class="muted center">Tap your tag. The first time, you'll pick a 4-digit PIN so nobody else can peek.</p>
+    <div class="who">${ps.map(p => `<button class="ntag" data-pick="${p.id}"><span class="str"></span><span>${esc(p.name)}</span>${p.drawn ? '<span class="dr">✓ Already drew</span>' : ''}</button>`).join('')}</div>`
+    : `<p class="muted center">No one's on the list yet. The organizer adds names under Organizer.</p>`}
+    <div class="center" style="margin-top:22px">${progress()}</div></section>`;
 }
 
 async function pick(id) {
@@ -275,15 +396,15 @@ function vMe() {
   else if (rec) hero = `<div class="tag ${S.pop ? 'pop' : ''}" role="region" aria-label="Your person"><p>You're the Secret Santa for</p><p class="big">${esc(rec.name)}</p><p>Keep it quiet.</p><button class="btn" data-act="hide">Hide</button></div>`;
   else hero = `<button class="tag" data-act="draw"><h3>${me.drawn ? 'See who you drew' : 'Draw my name'}</h3><p>${me.drawn ? 'You already drew. Tap to see them again.' : "Tap to pull a name from the hat. Only you will see it, and you'll never get yourself."}</p></button>`;
   S.pop = false;
-  app.innerHTML = `<div class="lhead"><h2 style="font-size:28px">Hi, ${esc(me.name)}</h2><button class="link" data-act="switch">Not ${esc(me.name)}?</button></div>
-    ${hero}
+  app.innerHTML = `<div class="lhead"><h2 class="hello">Hi, ${esc(me.name.split(' ')[0])}</h2><button class="link" data-act="switch">Not ${esc(me.name)}?</button></div>
+    <div class="tagwrap">${hero}</div>
     ${rec ? `<section class="card"><h3>${esc(rec.name)}'s wishlist</h3>${itemsHtml(d.wishes[rec.id], false)}</section>` : ''}
-    <section class="card"><h3>My wishlist</h3><p class="muted small">Everyone in the family can see this. Paste a link or just describe it.</p>
+    <section class="card"><h3>My wishlist</h3><p class="muted small" style="margin:6px 0 0">Everyone in the family can see this. Paste a link or just describe it.</p>
       ${itemsHtml(d.wishes[me.id], true)}
-      <form id="wishF" class="stackf" style="margin-top:14px">
-        <input name="title" maxlength="120" placeholder="What would you like?" required>
-        <input name="url" inputmode="url" autocapitalize="off" spellcheck="false" placeholder="Link (optional)">
-        <input name="note" maxlength="240" placeholder="Size, color, notes (optional)">
+      <form id="wishF" class="stackf" style="margin-top:16px">
+        <input name="title" maxlength="120" placeholder="What would you like?" aria-label="Wish" required>
+        <input name="url" inputmode="url" autocapitalize="off" spellcheck="false" placeholder="Link (optional)" aria-label="Link">
+        <input name="note" maxlength="240" placeholder="Size, color, notes (optional)" aria-label="Notes">
         <button class="btn primary">Add to my list</button>
       </form></section>`;
   $('#wishF').onsubmit = async e => {
@@ -291,7 +412,7 @@ function vMe() {
     const f = e.target, item = { id: rid(), title: f.title.value.trim(), url: f.url.value.trim(), note: f.note.value.trim() };
     if (!item.title) return;
     const btn = f.querySelector('button'); btn.disabled = true;
-    try { await saveWish([...(S.data.wishes[S.me.id] || []), item]); toast('Added'); }
+    try { await saveWish([...(S.data.wishes[S.me.id] || []), item]); toast('Added to your list'); }
     catch (err) { btn.disabled = false; oops(err); }
   };
 }
@@ -304,18 +425,18 @@ async function saveWish(items) {
 function vLists() {
   const d = S.data, mine = S.me && S.me.id;
   const ps = [...d.people].sort((a, b) => (b.id === S.receiver) - (a.id === S.receiver) || (a.id === mine) - (b.id === mine) || a.name.localeCompare(b.name));
-  app.innerHTML = `<section class="card"><h2>Everyone's wishlists</h2><p class="muted">Ideas, links and sizes from the whole family.</p>${progress()}</section>
+  app.innerHTML = `<section class="card center"><h2>Everyone's wishlists</h2><p class="muted">Ideas, links and sizes from the whole family.</p>${progress()}</section>
     ${ps.length ? ps.map(p => `<section class="card"><div class="lhead"><h3>${esc(p.name)}</h3>
       ${p.id === S.receiver ? '<span class="mark">Your person</span>' : p.id === mine ? '<span class="pill">You</span>' : ''}</div>
-      ${itemsHtml(d.wishes[p.id], false)}</section>`).join('') : '<p class="muted">No one on the list yet.</p>'}`;
+      ${itemsHtml(d.wishes[p.id], false)}</section>`).join('') : '<p class="muted center">No one on the list yet.</p>'}`;
 }
 
 function vAdmin() {
   const d = S.data;
   if (!S.adminPin) {
-    app.innerHTML = `<section class="card"><h2>Organizer tools</h2>
+    app.innerHTML = `<section class="card center"><h2>Organizer tools</h2>
       <p class="muted">Add the family, pair up spouses, set the budget and start the draw. You won't see who drew whom, so the organizer can play too.</p>
-      <button class="btn primary" data-act="unlock">Unlock with organizer PIN</button></section>`;
+      <button class="btn primary" data-act="unlock" style="margin-top:10px">Unlock with organizer PIN</button></section>`;
     return;
   }
   if (!S.edit) S.edit = d.people.map(p => ({ id: p.id, name: p.name, spouseId: p.spouseId }));
@@ -350,7 +471,7 @@ function vAdmin() {
         <button class="btn primary">Save settings</button>
       </form>
     </section>
-    <div class="row"><button class="link" data-act="lock">Lock organizer tools</button></div>`;
+    <div class="row" style="justify-content:center"><button class="link" data-act="lock">Lock organizer tools</button></div>`;
 
   app.querySelectorAll('[data-name]').forEach(el => el.oninput = () => { S.edit[+el.dataset.name].name = el.value; });
   app.querySelectorAll('[data-sp]').forEach(el => el.onchange = () => {
@@ -429,8 +550,9 @@ document.addEventListener('click', async e => {
 
 document.addEventListener('visibilitychange', () => { if (!document.hidden && S.data && $('#modal').hidden && S.view !== 'admin') refresh().catch(() => {}); });
 
-if (S.code) refresh().catch(e => { if (!authFail(e)) app.innerHTML = `<section class="card"><h2>Can't reach the site</h2><p class="muted">${esc(e.message)}</p><button class="btn" onclick="location.reload()">Try again</button></section>`; });
+if (S.code) refresh().catch(e => { if (!authFail(e)) app.innerHTML = `<section class="card center"><h2>Can't reach the site</h2><p class="muted">${esc(e.message)}</p><button class="btn" data-act="retry">Try again</button></section>`; });
 else paint();
+document.addEventListener('click', e => { if (e.target.closest('[data-act="retry"]')) location.reload(); });
 }
 </script>
 </body>
