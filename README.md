@@ -5,7 +5,8 @@ A small site for the family name exchange: draw names, keep them secret, and sha
 - **No getting yourself.** Optional toggle: no getting your spouse either.
 - **No dead ends.** When the organizer starts the draw, everyone is matched at once, so the last person is never stuck with only their own name.
 - **Private.** Each person sets a 4-digit PIN the first time they tap their name. Only they can see who they drew. The organizer can see who has drawn, but not who they got, so the organizer can play too.
-- **Wishlists.** Everyone adds ideas, links and notes, and the whole family can see them.
+- **Wishlists.** Everyone adds ideas, links and notes. By default the whole family can see them; turn on **Private wishlists** in Settings so each list is seen only by its owner and their Secret Santa.
+- **Big groups.** Use **Paste names** to add everyone at once: one per line or comma-separated, with couples on one line joined by `&` or `+` to pair them as spouses.
 
 Built with one HTML page and one Vercel serverless function (`api/ss.js`). There's no package.json and no dependencies. Data lives in Upstash Redis (free tier) and is reached through plain `fetch` to its REST API.
 
@@ -21,7 +22,7 @@ Built with one HTML page and one Vercel serverless function (`api/ss.js`). There
 ## Running it each year
 
 1. Open the site, enter the family code, go to **Organizer** and unlock it with `ADMIN_PIN`.
-2. Add everyone, pick spouses, set the spending limit and date, then **Save family**.
+2. Add everyone (or paste the whole list), pick spouses, set the spending limit and date, then **Save family**.
 3. Tap **Start the draw** and text the link plus the family code to the family.
 4. Each person taps their name, picks a PIN, draws, and adds to their wishlist.
 
