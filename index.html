@@ -130,7 +130,7 @@ label{display:grid;gap:6px}
 .accb{padding:0 14px 14px}.accb .wl{margin-top:0}.accb>p{margin:0 4px 4px}
 .cols{display:grid;gap:18px;align-items:start}.col{display:grid;gap:18px;align-content:start}
 main.wide{max-width:1160px}
-@media(min-width:900px){.cols{grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:24px}.cols .tag{min-height:260px}}
+@media(min-width:900px){.cols{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px}.cols .tag{min-height:260px}}
 /* footer scene */
 footer svg{display:block;width:100%;height:clamp(110px,17vw,210px)}
 footer p{margin:0;background:#eef5f7;color:#4d6670;text-align:center;font-size:13px;padding:2px 16px calc(14px + env(safe-area-inset-bottom))}
@@ -347,7 +347,7 @@ function paint() {
   $('#tabs').hidden = !S.data;
   document.querySelectorAll('#tabs button').forEach(b => b.setAttribute('aria-current', String(b.dataset.v === S.view)));
   if (!S.code || !S.data) return vGate();
-  app.classList.toggle('wide', S.view === 'me' && !!S.me);
+  app.classList.toggle('wide', (S.view === 'me' && !!S.me) || (S.view === 'admin' && !!S.adminPin));
   if (S.view === 'lists') return vLists();
   if (S.view === 'admin') return vAdmin();
   return S.me ? vMe() : vWho();
@@ -472,6 +472,7 @@ function vAdmin() {
   const locked = d.started, st = d.settings;
   const opts = (p) => `<option value="">No spouse</option>` + S.edit.filter(o => o.id !== p.id && o.name.trim()).map(o => `<option value="${o.id}" ${p.spouseId === o.id ? 'selected' : ''}>${esc(o.name)}</option>`).join('');
   app.innerHTML = `
+    <div class="cols"><div class="col">
     <section class="card"><h2>The draw</h2>
       ${locked ? `<p>Names are in the hat. Each person sees only their own.</p>${progress()}
         <ul class="status">${d.people.map(p => `<li>${p.drawn ? '<span class="chk">✓</span>' : '<span class="muted">○</span>'} ${esc(p.name)}</li>`).join('')}</ul>
@@ -479,6 +480,16 @@ function vAdmin() {
       : `<p class="muted">When everyone's on the list, start the draw. Every name is matched at once, so nobody gets themselves${st.noSpouse ? ' or their spouse' : ''} and the last person is never stuck.</p>
         <div class="row" style="margin-top:12px"><button class="btn primary" data-act="start" ${d.people.length < 2 ? 'disabled' : ''}>Start the draw</button></div>`}
     </section>
+    <section class="card"><h2>Settings</h2>
+      <form id="setF" class="stackf">
+        <label class="small muted">Title<input name="title" maxlength="60" value="${esc(st.title)}"></label>
+        <label class="small muted">Spending limit<input name="budget" maxlength="30" placeholder="$25" value="${esc(st.budget)}"></label>
+        <label class="small muted">Exchange date<input name="date" type="date" value="${esc(st.date)}"></label>
+        <label class="switch"><input type="checkbox" name="noSpouse" ${st.noSpouse ? 'checked' : ''} ${locked ? 'disabled' : ''}> No drawing your spouse</label>
+        <button class="btn primary">Save settings</button>
+      </form>
+    </section>
+    </div><div class="col">
     <section class="card"><h2>Family</h2>
       ${locked ? '<p class="muted small">The draw has started, so you can only fix spelling. Reset the draw to add, remove or pair people.</p>' : '<p class="muted small">Pick a spouse for anyone who is married. Pairing one side pairs both.</p>'}
       <div class="people">${S.edit.map((p, i) => {
@@ -491,15 +502,7 @@ function vAdmin() {
         </div>`; }).join('')}</div>
       <div class="row"><button class="btn" data-act="add" ${locked ? 'disabled' : ''}>Add person</button><button class="btn primary" data-act="savePeople">Save family</button></div>
     </section>
-    <section class="card"><h2>Settings</h2>
-      <form id="setF" class="stackf">
-        <label class="small muted">Title<input name="title" maxlength="60" value="${esc(st.title)}"></label>
-        <label class="small muted">Spending limit<input name="budget" maxlength="30" placeholder="$25" value="${esc(st.budget)}"></label>
-        <label class="small muted">Exchange date<input name="date" type="date" value="${esc(st.date)}"></label>
-        <label class="switch"><input type="checkbox" name="noSpouse" ${st.noSpouse ? 'checked' : ''} ${locked ? 'disabled' : ''}> No drawing your spouse</label>
-        <button class="btn primary">Save settings</button>
-      </form>
-    </section>
+    </div></div>
     <div class="row" style="justify-content:center"><button class="link" data-act="lock">Lock organizer tools</button></div>`;
 
   app.querySelectorAll('[data-name]').forEach(el => el.oninput = () => { S.edit[+el.dataset.name].name = el.value; });
